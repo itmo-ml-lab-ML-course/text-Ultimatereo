@@ -180,5 +180,5 @@ if __name__ == "__main__":
         'genres': df['genres'].apply(normalize)
     }
     text_df = pd.DataFrame(text_data)
-    text_df.dropna(inplace=True, subset=['description', 'genres'])
+    text_df.dropna(inplace=True, subset=['name', 'description', 'genres'])
     text_df.to_csv("text.csv", encoding="utf-8", index=False)
