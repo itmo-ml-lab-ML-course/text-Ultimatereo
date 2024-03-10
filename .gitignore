@@ -162,3 +162,4 @@ cython_debug/
 /authorization_code.txt
 /token.json
 /jsons/*
+/pics/*

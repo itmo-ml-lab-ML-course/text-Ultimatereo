@@ -53,9 +53,9 @@ def get_data_from_api(api_url, token, i):
             # Проверяем успешность запроса
             if response.status_code == 200:
                 # Если запрос успешен, возвращаем данные
-                with open(f"jsons/get_request_{i}.json", "w", encoding="utf-8") as file:
-                    file.write(response.text)
-                return response.json()
+                with open(f"pics/get_request_{i}.jpg", "bw") as file:
+                    file.write(response.content)
+                return None
             elif response.status_code == 429:
                 continue
             else:
@@ -169,16 +169,34 @@ def normalize(d):
     return [el['russian'] for el in nice_d]
 
 
+def download_pictures(df):
+    df['local_storage'] = None
+    with tqdm(total=len(df)) as pbar:
+        for index, row in df.iterrows():
+            # d = json.loads(row['image'].replace("'", '"'))
+            # get_data_from_api(f"https://shikimori.one{d['original']}",
+            #                   access_token, index)
+            df.at[index, 'local_storage'] = f"pics/get_request_{index}.jpg"
+            pbar.update(1)
+    df.to_csv("image.csv", encoding="utf-8")
+
+
 if __name__ == "__main__":
     # main()
+    # Create df for this task
     df = pd.read_csv("anime.csv")
     text_data = {
         'name': df['russian'],
         'score': df['score'],
+        'image': df['image'],
         'aired_on': df['aired_on'],
         'description': df['description'],
         'genres': df['genres'].apply(normalize)
     }
     text_df = pd.DataFrame(text_data)
-    text_df.dropna(inplace=True, subset=['name', 'description', 'genres'])
-    text_df.to_csv("text.csv", encoding="utf-8", index=False)
+    text_df.dropna(inplace=True, subset=['name', 'description', 'genres', 'image'])
+    print(len(text_df))
+    # text_df.to_csv("text.csv", encoding="utf-8", index=False)
+    # Download pictures
+
+    download_pictures(text_df)
